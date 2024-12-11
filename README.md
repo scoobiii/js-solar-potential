@@ -1,91 +1,169 @@
-# ☀️ Solar Potential demo
+MEX API Solar versão localmente (localhost) e também no **Google Cloud Platform (GCP)** utilizando o **Cloud Run**, incluindo o IP e a URL pública.
 
-> _This is not an officially supported Google product._
+---
 
-The [Solar API](https://developers.google.com/maps/documentation/solar/overview)
-offers many benefits to solar marketplace websites, solar installers, and solar SaaS designers.
+# ☀️ **Demo do Potencial Solar - Versão Local e GCP**
 
-This is a demo app that showcases and displays the information from the Solar API into a map.
+Este aplicativo demonstra como usar a **Solar API** para exibir informações sobre o potencial solar em um mapa personalizado do Google. O app pode ser executado localmente no **localhost** ou implantado na **Google Cloud Platform** (GCP) utilizando o **Cloud Run**.
 
-## Before you begin
+---
 
-You need a Google Cloud project with a billing account and the Maps JavaScript API and Solar API enabled.
+## **Antes de Começar**
 
-To learn more, see [Set up in Cloud Console](https://developers.google.com/maps/documentation/javascript/cloud-setup).
+### **Requisitos:**
+1. **Conta no Google Cloud Platform (GCP)**: Você precisará de uma conta do Google Cloud com um projeto ativado e com a conta de faturamento configurada.
+2. **Ativar APIs no Google Cloud**: Ative a **Google Maps JavaScript API** e a **Solar API** no Console do Google Cloud.
+   - Siga o guia de configuração do [Google Cloud Console](https://console.cloud.google.com/).
+3. **Ambiente de Desenvolvimento**: Certifique-se de ter o **Node.js** instalado. Para verificar, execute `node -v` no terminal.
 
-Additionally, you need a development environment with [Node.js](https://nodejs.org/en) installed.
+---
 
-## Google Maps API key
-
-This app requires a Google Maps API key to work, follow the [Use API Keys](https://developers.google.com/maps/documentation/javascript/get-api-key) guide to create a new one.
-
-Once you have your API key, update the [`.env`](.env) file with your key.
-
-```sh
-VITE_GOOGLE_MAPS_API_KEY="My Google Maps API key"
+### **1. Clonar o Repositório**
+Clone o repositório para sua máquina local:
+```bash
+git clone https://github.com/seu-repositorio/solar-potential.git
+cd solar-potential
 ```
 
-## Running the app
-
-First, run `npm install` to install the required dependencies.
-
-### Developer mode
-
-To start the app in developer mode, this allows hot-reloads.
-This means that every time you change a file, the app reloads itself automatically.
-
-```sh
-# Run in developer mode.
-npm run dev
+### **2. Instalar Dependências**
+Instale todas as dependências necessárias para rodar o projeto:
+```bash
+npm install
 ```
 
-### Production mode
+---
 
-Starting in developer mode enables a lot of useful tools while developing, but for a production version we first need to build the app.
+## **Rodando Localmente no `localhost`**
 
-```sh
-# Build the app.
-npm run build
+### **Passos para Rodar Localmente:**
 
-# Start the app.
-npm run start
+1. **Configuração da Chave da API**: Certifique-se de obter a chave da API do **Google Maps** e da **Solar API**, e adicione-a no arquivo `.env`:
+    ```
+    VITE_GOOGLE_MAPS_API_KEY="Sua chave da API do Google Maps"
+    ```
+
+2. **Rodar o App em Modo de Desenvolvimento**: Utilize o comando abaixo para iniciar o servidor local. O servidor será executado em `http://localhost:3000`:
+    ```bash
+    npm run dev
+    ```
+
+    Após rodar esse comando, abra o navegador e acesse `http://localhost:3000` para ver o aplicativo em funcionamento.
+
+---
+
+## **Rodando no Google Cloud Platform (GCP) com Cloud Run**
+
+### **Passos para Implantar no GCP:**
+
+1. **Autenticação e Preparação do Google Cloud**:
+    - Faça login no Google Cloud:
+      ```bash
+      gcloud auth login
+      ```
+    - Selecione o projeto GCP no qual você deseja implantar o aplicativo:
+      ```bash
+      gcloud config set project "seu-id-do-projeto"
+      ```
+
+2. **Construir e Implantar no Cloud Run**:
+    - Defina a região para a implantação:
+      ```bash
+      export LOCATION="us-central1"
+      ```
+
+    - Agora, construa e implante o aplicativo no **Cloud Run** com o comando abaixo. Isso criará e implantará o aplicativo automaticamente e atribuirá uma URL pública:
+      ```bash
+      gcloud run deploy "solar-potential" \
+        --source="." \
+        --region="$LOCATION" \
+        --allow-unauthenticated
+      ```
+
+    - Após a execução do comando, o **Google Cloud** fornecerá uma URL pública com a qual você poderá acessar a versão do app rodando no GCP. O link será semelhante a:
+      ```
+      https://solar-potential-<hash>.uc.r.appspot.com
+      ```
+
+    - Para acessar o app, basta abrir o navegador e digitar a URL fornecida.
+
+---
+
+## **Estrutura de Pastas e Arquivos**
+
+Aqui está a árvore de diretórios do projeto:
+
+```
+solar-potential/
+│
+├── public/                    # Arquivos públicos (ex: HTML, ícones)
+│   └── index.html             # Arquivo principal HTML
+├── src/                       # Código-fonte do aplicativo
+│   ├── components/            # Componentes reutilizáveis
+│   ├── pages/                 # Páginas do aplicativo
+│   ├── services/              # Serviços de API e lógica de negócios
+│   └── stores/                # Armazenamento de estado (Svelte)
+├── .env                       # Arquivo de variáveis de ambiente (contém a chave da API)
+├── package.json               # Gerenciador de pacotes e dependências
+├── README.md                  # Este arquivo de documentação
+├── tailwind.config.js         # Configurações do Tailwind CSS
+└── vite.config.js             # Configurações do Vite
 ```
 
-## Deploying to Cloud Run
+---
 
-One option to deploy your app is with [Cloud Run](https://cloud.google.com/run).
-It's easy to use and allows us to build and deploy scalable containerized apps written in any language on a fully managed platform.
+## **Rodando os Testes**
 
-For some languages like Node.js, it infers the configuration and can [deploy from source directly](https://cloud.google.com/run/docs/deploying-source-code), without any additional configurations!
-This uploads your source, builds it with [Cloud Build](https://cloud.google.com/build), deploys it to Cloud Run, and starts the service with `npm run start`.
-All with a single command.
+Antes de subir a API para o ambiente de produção (seja local ou GCP), é importante rodar os testes e garantir que tudo está funcionando corretamente.
 
-```sh
-# Choose the Cloud location to deploy the app.
-export LOCATION="us-central1"
+1. **Verificação de Tipos**: Execute o comando abaixo para verificar se há erros de tipos no código:
+    ```bash
+    npm run check
+    ```
 
-# Build and deploy the app from source.
-gcloud run deploy "solar-potential" \
-  --source="." \
-  --region="$LOCATION" \
-  --allow-unauthenticated
-```
+2. **Verificação de Estilo de Código (Linting)**: Execute o comando abaixo para verificar problemas de formatação e estilo no código:
+    ```bash
+    npm run lint
+    ```
 
-## Checking your code
+3. **Formatação Automática do Código**: Para corrigir automaticamente qualquer problema de formatação:
+    ```bash
+    npm run format
+    ```
 
-You can use `npm run check` to do type checking and check for other common issues.
-You can also use `npm run check:watch` to continuously check your code when you save your changes.
+4. **Testes Contínuos**: Caso queira rodar os testes continuamente durante o desenvolvimento, execute o seguinte comando para que os testes sejam executados automaticamente toda vez que você salvar um arquivo:
+    ```bash
+    npm run check:watch
+    ```
 
-To check for styling and formatting issues, you can use `npm run lint`.
-To fix any lint issues, use `npm run format` to automatically format all the code base.
+---
 
-## Tech stack
+## **URLs e Acessos**
 
-- [Solar API](https://developers.google.com/maps/documentation/solar/overview): Get solar panel configurations, solar potential, and data layers.
-- [Google Maps](https://developers.google.com/maps/documentation/javascript/overview): Display a custom map with the Google Maps JavaScript API.
-- [Material Desgin 3](https://m3.material.io): Material Design 3 [web components](https://github.com/material-components/material-web#readme).
-- [SvelteKit](https://kit.svelte.dev): Compiler framework to develop declarative reactive web apps with [TypeScript](https://www.typescriptlang.org).
-- [Vite](https://vitejs.dev): Build tool with a fast development experience for modern web projects.
-- [Tailwind](https://tailwindcss.com): CSS framework for design and styling.
-- [ESLint](https://eslint.org): Statically analyze code to quickly find problems.
-- [Prettier](https://prettier.io): Opinionated code formatter.
+- **Local**: A versão do aplicativo rodando localmente pode ser acessada via `http://localhost:3000`.
+- **GCP (Cloud Run)**: A versão do aplicativo rodando no Google Cloud será acessada via URL pública fornecida pelo GCP, com formato semelhante a:
+  ```
+  https://solar-potential-<hash>.uc.r.appspot.com
+  ```
+
+---
+
+## **Tech Stack**
+
+- **Solar API**: Para obter dados sobre o potencial solar e configurações de painéis solares.
+- **Google Maps**: Para exibir mapas interativos com a API do Google Maps.
+- **Material Design 3**: Framework para componentes com Material Design.
+- **SvelteKit**: Framework para desenvolvimento de aplicativos web reativos e declarativos.
+- **Vite**: Ferramenta de build otimizada para desenvolvedores modernos.
+- **Tailwind CSS**: Framework CSS para construção rápida de interfaces.
+- **ESLint**: Ferramenta para análise estática do código.
+- **Prettier**: Ferramenta para formatação automática de código.
+
+---
+
+## **Considerações Finais**
+
+Este guia fornece instruções detalhadas para rodar o aplicativo de **Potencial Solar** tanto localmente quanto na **Google Cloud Platform (GCP)**. Siga as etapas para configurar, rodar os testes, e implantar a aplicação, garantindo que ela esteja funcionando corretamente antes de ser disponibilizada publicamente.
+
+Caso encontre problemas, verifique as mensagens de erro e as configurações de sua conta Google Cloud para garantir que tudo esteja correto.
+
+---
